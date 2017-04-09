@@ -1,0 +1,217 @@
+swagger: '2.0'
+info:
+  title: SeaWar API
+  description: SeaWar API
+  version: "0.0.0"
+# the domain of the service
+host: localhost:8080
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /games:
+    get:
+      operationId: getGameList
+      summary: games
+      description: |
+        distpalys games.
+      parameters:
+      tags:
+        - Games
+      responses:
+        200:
+          description: An array of games
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/GameListItem'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      operationId: newGame
+      summary: init game
+      description: |
+        initiates new game.
+      parameters:
+        - name: gamePost
+          in: body
+          description: Game params.
+          required: false
+          schema:
+            $ref: '#/definitions/GamePost'
+      tags:
+        - Games
+      responses:
+        200:
+          description: A new game
+          schema:
+            $ref: '#/definitions/GameDetails'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /games/{gameId}:
+    get:
+      operationId: getGameDetails
+      summary: games
+      description: |
+        distpalys game.
+      parameters:
+        - name: gameId
+          in: path
+          description: game id.
+          required: true
+          type: string
+      tags:
+        - Games
+      responses:
+        200:
+          description: A game details
+          schema:
+            $ref: '#/definitions/GameDetails'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /games/{gameId}/players:
+    get:
+      operationId: getGamePlayerList
+      summary: game players
+      description: |
+        distpalys game players.
+      parameters:
+        - name: gameId
+          in: path
+          description: game id.
+          required: true
+          type: string
+      tags:
+        - Games
+      responses:
+        200:
+          description: An array game players
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PlayerGetBase'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      operationId: newGamePlayer
+      summary: add player
+      description: |
+        add player to game.
+      parameters:
+        - name: gameId
+          in: path
+          description: game id.
+          required: true
+          type: string
+        - name: player
+          in: body
+          description: user name.
+          required: true
+          schema:
+            $ref: '#/definitions/PlayerBase'
+      tags:
+        - Games
+      responses:
+        200:
+          description: A new game
+          schema:
+            $ref: '#/definitions/PlayerIdentity'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+definitions:
+
+  GameParams:
+    type: object
+    properties:
+      notImplemented:
+        type: string
+
+  GameBase:
+    type: object
+    properties:
+      name:
+        type: string
+      params:
+        $ref: '#/definitions/GameParams'
+
+  GameGetBase:
+    allOf:
+      - $ref: '#/definitions/GameBase'
+      - type: object
+        properties:
+          id:
+            type: string
+
+  GameListItem:
+    allOf:
+      - $ref: '#/definitions/GameGetBase'
+      - type: object
+        properties:
+          notImplemented:
+            type: string
+
+  GameDetails:
+    allOf:
+      - $ref: '#/definitions/GameGetBase'
+      - type: object
+        properties:
+          notImplemented:
+            type: string
+
+  GamePost:
+    allOf:
+      - $ref: '#/definitions/GameBase'
+      - type: object
+        properties:
+          notImplemented:
+            type: string
+
+  PlayerBase:
+    type: object
+    properties:
+      title:
+        type: string
+
+  PlayerGetBase:
+    allOf:
+      - $ref: '#/definitions/PlayerBase'
+      - type: object
+        properties:
+          id:
+            type: string
+
+  PlayerIdentity:
+    allOf:
+      - $ref: '#/definitions/PlayerGetBase'
+      - type: object
+        properties:
+          key:
+            type: string
+
+
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
